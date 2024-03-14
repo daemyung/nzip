@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-pytest
-torch
-torchvision
-torchaudio
+import pytest
+
+
+@pytest.fixture
+def bit_width():
+    return 8
