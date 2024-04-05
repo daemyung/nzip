@@ -12,7 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-torch
-torchvision
-torchaudio
-pytest
+from dataclasses import dataclass
+from typing import Optional
+
+from torch import Tensor
+
+
+@dataclass
+class Range:
+    min: Optional[Tensor] = None
+    max: Optional[Tensor] = None
+
+
+Stats = Range
