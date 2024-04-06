@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .analyzer import *
-from .stats import *
-from .utils import *
+from nzip.quantization import PatchAttribute
+
+
+class TestUtils:
+    def test_patch_attribute(self):
+        class Foo:
+            def __init__(self):
+                self.message = None
+
+        foo = Foo()
+        assert foo.message is None
+
+        with PatchAttribute(foo, 'message', 'hello!'):
+            assert foo.message == 'hello!'
+        assert foo.message is None
