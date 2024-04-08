@@ -14,7 +14,7 @@
 
 import abc
 from abc import ABC
-from typing import Union, Tuple, List
+from typing import Callable, List, Tuple, Union
 
 import torch
 from torch import Tensor
@@ -80,13 +80,20 @@ class MinMaxAnalyzer(Analyzer):
 
     def merge_stats(self, stats: Stats):
         if stats.min is not None:
-            if self.stats.min is None:
-                self.stats.min = stats.min
-            else:
-                self.stats.min = torch.minimum(self.stats.min, stats.min)
+            self.__merge_bounds('min', stats.min, torch.minimum)
 
         if stats.max is not None:
-            if self.stats.max is None:
-                self.stats.max = stats.max
-            else:
-                self.stats.max = torch.maximum(self.stats.max, stats.max)
+            self.__merge_bounds('max', stats.max, torch.maximum)
+
+    def __merge_bounds(self, name: str, value: Tensor, compare: Callable):
+        """
+        Merge the value with the existing bound based on the result of the comparison.
+
+        :param name: The name of the attribute to be merged.
+        :param value: The value of the attribute to be merged.
+        :param compare: A function that compares two values and updates the attribute.
+        """
+        if (attr := getattr(self.stats, name)) is None:
+            setattr(self.stats, name, value)
+        else:
+            compare(attr, value, out=attr)
