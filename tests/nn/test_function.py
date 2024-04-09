@@ -54,3 +54,35 @@ class TestFunction:
         output.backward(torch.ones_like(output))
         expectation = torch.tensor([0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0])
         assert torch.allclose(input.grad, expectation)
+
+    def test_dequantize(self):
+        input = torch.tensor([-3.0, -2.0, -2.0, -1.0, -1.0, 0.0, 1.0, 1.0])
+        scale = torch.tensor(0.3061)
+        output = function.dequantize(input, scale, None)
+        expectation = torch.tensor([-9.801, -6.534, -6.534, -3.267, -3.267, 0.0, 3.267, 3.267])
+        assert torch.allclose(output, expectation, atol=1e-2)
+
+    def test_dequantize_with_bias(self):
+        input = torch.tensor([-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0])
+        scale = torch.tensor(0.5)
+        bias = torch.tensor(1.0)
+        output = function.dequantize(input, scale, bias)
+        expectation = torch.tensor([-10.0, -8.0, -6.0, -4.0, -2.0, 0.0, 2.0, 4.0])
+        assert torch.allclose(output, expectation)
+
+    def test_dequantize_backpropagation(self):
+        input = torch.tensor([-3.0, -2.0, -2.0, -1.0, -1.0, 0.0, 1.0, 1.0], requires_grad=True)
+        scale = torch.tensor(0.3061)
+        output = function.dequantize(input, scale, None)
+        output.backward(torch.ones_like(output))
+        expectation = torch.full(output.shape, 1 / scale)
+        assert torch.allclose(input.grad, expectation)
+
+    def test_dequantize_with_bias_backpropagation(self):
+        input = torch.tensor([-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0], requires_grad=True)
+        scale = torch.tensor(0.5)
+        bias = torch.tensor(1.0)
+        output = function.dequantize(input, scale, bias)
+        output.backward(torch.ones_like(output))
+        expectation = torch.full(output.shape, 1 / scale)
+        assert torch.allclose(input.grad, expectation)

@@ -56,3 +56,35 @@ class Quantize(Function):
 
 def quantize(input: Tensor, scale: Tensor, bias: Optional[Tensor], lower_bound: int, upper_bound: int) -> Tensor:
     return Quantize.apply(input, scale, bias, lower_bound, upper_bound)[0]
+
+
+class Dequantize(Function):
+    @staticmethod
+    def forward(*args: Any, **kwargs: Any) -> Any:
+        return Dequantize.__forward(*args, **kwargs)
+
+    @staticmethod
+    def setup_context(ctx: Any, inputs: Tuple[Any, ...], outputs: Any):
+        Dequantize.__setup_context(ctx, inputs[1])
+
+    @staticmethod
+    def backward(ctx: Any, *grad_outputs: Any) -> Any:
+        return Dequantize.__backward(*ctx.saved_tensors, grad_outputs[0])
+
+    @staticmethod
+    def __forward(input: Tensor, scale: Tensor, bias: Optional[Tensor]) -> Any:
+        output = input.detach().clone() if bias is None else input - bias
+        torch.div(output, scale, out=output)
+        return output
+
+    @staticmethod
+    def __setup_context(ctx: Any, scale: Tensor):
+        ctx.save_for_backward(scale)
+
+    @staticmethod
+    def __backward(scale: Tensor, grad_output: Tensor):
+        return grad_output / scale, None, None
+
+
+def dequantize(input: Tensor, scale: Tensor, bias: Optional[Tensor]) -> Tensor:
+    return Dequantize.apply(input, scale, bias)
