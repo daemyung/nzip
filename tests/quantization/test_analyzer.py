@@ -78,11 +78,9 @@ class TestMinMaxAnalyzer:
     def test_reset_stats(self):
         analyzer = MinMaxAnalyzer(symmetric=False)
         analyzer.update_stats(torch.arange(0.0, 9.0))
-
         assert analyzer.stats.min is not None
         assert analyzer.stats.max is not None
 
         analyzer.reset_stats()
-
         assert analyzer.stats.min is None
         assert analyzer.stats.max is None
