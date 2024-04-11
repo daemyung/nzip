@@ -15,7 +15,7 @@
 import pytest
 import torch
 
-from nzip.quantization import MinMaxAnalyzer, Quantizer
+from nzip.quantization import MinMaxAnalyzer, Quantizer, Dequantizer
 
 
 class TestModule:
@@ -51,3 +51,20 @@ class TestModule:
 
         output.backward(torch.ones_like(output))
         assert torch.all(torch.eq(input.grad, 1.0))
+
+    def test_dequantizer(self):
+        scale = torch.tensor(0.3061)
+        dequantizer = Dequantizer(scale, None)
+        input = torch.tensor([-3.0, -2.0, -2.0, -1.0, -1.0, 0.0, 1.0, 1.0])
+        output = dequantizer(input)
+        expectation = torch.tensor([-9.801, -6.534, -6.534, -3.267, -3.267, 0.0, 3.267, 3.267])
+        assert torch.allclose(output, expectation, atol=1e-2)
+
+    def test_dequantizer_with_bias(self):
+        scale = torch.tensor(0.5)
+        bias = torch.tensor(1.0)
+        dequantizer = Dequantizer(scale, bias)
+        input = torch.tensor([-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0])
+        output = dequantizer(input)
+        expectation = torch.tensor([-10.0, -8.0, -6.0, -4.0, -2.0, 0.0, 2.0, 4.0])
+        assert torch.allclose(output, expectation)

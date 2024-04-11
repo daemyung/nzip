@@ -130,3 +130,25 @@ class Quantizer(Module):
         :return: The upper bound that can be represented.
         """
         return 2 ** (self.bits - 1) - 1
+
+
+class Dequantizer(Module):
+    def __init__(self, scale: Tensor, bias: Optional[Tensor]):
+        """
+        Constructor.
+
+        :param scale: The scale used for the quantization.
+        :param bias: The bias used for the quantization.
+        """
+        super().__init__()
+        self.scale = scale
+        self.bias = bias
+
+    def forward(self, input: Tensor) -> Tensor:
+        """
+        Perform the dequantization on the input.
+
+        :param input: The input to be dequantized.
+        :return: The dequantized tensor.
+        """
+        return function.dequantize(input, self.scale, self.bias)

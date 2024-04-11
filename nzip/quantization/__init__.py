@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nzip.quantization.analyzer import *
-from nzip.quantization.module import *
-from nzip.quantization.stats import *
-from nzip.quantization.utils import *
+from .analyzer import *
+from .module import *
+from .stats import *
+from .utils import *
