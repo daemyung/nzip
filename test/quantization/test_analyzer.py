@@ -15,7 +15,7 @@
 import pytest
 import torch
 
-from nzip.quantization import MinMaxAnalyzer
+from nzip.quant import MinMaxAnalyzer
 
 
 class TestMinMaxAnalyzer:

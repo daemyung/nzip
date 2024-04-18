@@ -19,7 +19,7 @@ from typing import Callable, List, Tuple, Union
 import torch
 from torch import Tensor
 
-from nzip.quantization.stats import Stats, Range
+from .stats import Stats, Range
 
 
 class Analyzer(ABC):

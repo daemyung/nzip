@@ -21,8 +21,8 @@ from torch import Tensor
 from torch.nn import Module
 
 import nzip.nn.function as function
-from nzip.quantization.analyzer import Analyzer
-from nzip.quantization.utils import PatchAttribute
+from .analyzer import Analyzer
+from .utils import PatchAttribute
 
 
 class Quantizer(Module):
@@ -30,8 +30,8 @@ class Quantizer(Module):
         """
         Constructor.
 
-        :param bits: The number of bits to use for the quantization.
-        :param analyzer: An instance of Analyzer, which provides information for the quantization.
+        :param bits: The number of bits to use for the quant.
+        :param analyzer: An instance of Analyzer, which provides information for the quant.
         """
         super().__init__()
         self.bits = bits
@@ -42,7 +42,7 @@ class Quantizer(Module):
     @contextmanager
     def calibrate(self):
         """
-        Calibrate the quantization parameters.
+        Calibrate the quant parameters.
         """
 
         @wraps(self.forward)
@@ -69,7 +69,7 @@ class Quantizer(Module):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-        Perform the quantization on the input.
+        Perform the quant on the input.
 
         :param input: The input to be quantized.
         :return: The quantized tensor.
@@ -82,22 +82,21 @@ class Quantizer(Module):
     @property
     def scale(self) -> Tensor:
         """
-        Return the scale for the quantization.
+        Return the scale for the quant.
 
-        :return: The scale for the quantization.
+        :return: The scale for the quant.
         """
         if self.symmetric:
             return self.upper_bound / self.max
         else:
             return (2 ** self.bits - 1) / (self.max - self.min)
 
-
     @property
     def bias(self) -> Optional[Tensor]:
         """
-        Return the bias for the quantization.
+        Return the bias for the quant.
 
-        :return: The bias for the quantization.
+        :return: The bias for the quant.
         """
         if self.symmetric:
             return None
@@ -137,8 +136,8 @@ class Dequantizer(Module):
         """
         Constructor.
 
-        :param scale: The scale used for the quantization.
-        :param bias: The bias used for the quantization.
+        :param scale: The scale used for the quant.
+        :param bias: The bias used for the quant.
         """
         super().__init__()
         self.scale = scale

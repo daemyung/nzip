@@ -13,6 +13,6 @@
 # limitations under the License.
 
 from .analyzer import *
-from .module import *
+from .quantization import *
 from .stats import *
 from .utils import *

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nzip.quantization import PatchAttribute
+from nzip.quant import PatchAttribute
 
 
 class TestUtils:

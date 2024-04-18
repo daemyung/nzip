@@ -15,10 +15,10 @@
 import pytest
 import torch
 
-from nzip.quantization import MinMaxAnalyzer, Quantizer, Dequantizer
+from nzip.quant import MinMaxAnalyzer, Quantizer, Dequantizer
 
 
-class TestModule:
+class TestQuantization:
     @pytest.mark.parametrize('symmetric', [True, False])
     def test_quantizer(self, symmetric):
         quantizer = Quantizer(3, MinMaxAnalyzer(symmetric))
